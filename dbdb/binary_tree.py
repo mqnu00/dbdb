@@ -15,7 +15,7 @@ class BinaryNode(object):
         self.right_ref = right_ref
         self.length = length
 
-    def store_ref(self, storage):
+    def store_refs(self, storage):
         self.value_ref.store(storage)
         self.left_ref.store(storage)
         self.right_ref.store(storage)
