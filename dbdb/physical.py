@@ -13,7 +13,7 @@ class Storage(object):
 
     def __init__(self, f):
         self._f = f
-        self._locked = False
+        self.locked = False
         self._ensure_superblock()
 
     def _ensure_superblock(self):
@@ -29,18 +29,18 @@ class Storage(object):
         self.unlock()
 
     def lock(self):
-        if not self._locked:
+        if not self.locked:
             portalocker.lock(self._f, portalocker.LOCK_EX)
-            self._locked = True
+            self.locked = True
             return True
         else:
             return False
 
     def unlock(self):
-        if self._locked:
+        if self.locked:
             self._f.flush()
             portalocker.unlock(self._f)
-            self._locked = False
+            self.locked = False
 
     def _seek_end(self):
         """
