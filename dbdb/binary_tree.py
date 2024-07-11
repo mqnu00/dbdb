@@ -118,7 +118,7 @@ class BinaryTree(LogicalBase):
                 )
             )
         else:
-            # 找到插入的位置
+            # key 已存在
             new_node = BinaryNode.from_node(node, value_ref=value_ref)
         return self.node_ref_class(referent=new_node)
 
