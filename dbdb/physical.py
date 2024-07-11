@@ -71,7 +71,7 @@ class Storage(object):
 
     def get_root_address(self):
         """
-        获取元数据长度
+        获取根节点位置
         :return:
         """
         self._seek_superblock()
