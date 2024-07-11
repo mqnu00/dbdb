@@ -42,6 +42,5 @@ class DBDB(object):
         else:
             return True
 
-
     def __len__(self):
         return len(self._tree)
