@@ -1,14 +1,17 @@
+from dbdb.physical import Storage
+
+
 class ValueRef(object):
 
     def prepare_to_store(self, storage):
         pass
 
     @staticmethod
-    def referent_to_string(referent):
+    def referent_to_string(referent) -> bytes:
         return referent.encode('utf-8')
 
     @staticmethod
-    def string_to_referent(string):
+    def string_to_referent(string) -> str:
         return string.decode('utf-8')
 
     def __init__(self, referent=None, address=0):
@@ -19,7 +22,7 @@ class ValueRef(object):
     def address(self):
         return self._address
 
-    def get(self, storage):
+    def get(self, storage: Storage):
         if self._referent is None and self.address:
             self._referent = self.string_to_referent(storage.read(self._address))
         return self._referent
@@ -31,11 +34,11 @@ class ValueRef(object):
 
 
 class LogicalBase(object):
-
     node_ref_class = None
     value_ref_class = ValueRef
 
-    def __init__(self, storage):
+    def __init__(self, storage: Storage):
+        self._tree_ref = None
         self._storage = storage
         self._refresh_tree_ref()
 
@@ -44,17 +47,23 @@ class LogicalBase(object):
             address=self._storage.get_root_address()
         )
 
-    def _follow(self, ref):
+    def _follow(self, ref: ValueRef):
         return ref.get(self._storage)
 
     def commit(self):
         self._tree_ref.store(self._storage)
         self._storage.commit_root_address(self._tree_ref.address)
 
+    def _get(self, ref, key):
+        pass
+
     def get(self, key):
         if not self._storage.locked:
             self._refresh_tree_ref()
         return self._get(self._follow(self._tree_ref), key)
+
+    def _insert(self, ref, key, value):
+        pass
 
     def set(self, key, value):
         if self._storage.lock():
@@ -63,19 +72,12 @@ class LogicalBase(object):
             self._follow(self._tree_ref), key, self.value_ref_class(value)
         )
 
+    def _delete(self, ref, key):
+        pass
+
     def pop(self, key):
         if self._storage.lock():
             self._refresh_tree_ref()
         self._tree_ref = self._delete(
             self._follow(self._tree_ref), key
         )
-
-    def __len__(self):
-        if not self._storage.locked:
-            self._refresh_tree_ref()
-        root = self._follow(self._tree_ref)
-        if root:
-            return root.length
-        else:
-            return 0
-

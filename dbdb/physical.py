@@ -56,10 +56,10 @@ class Storage(object):
         """
         self._f.seek(0)
 
-    def _bytes_to_integer(self, integer_bytes):
+    def _bytes_to_integer(self, integer_bytes) -> int:
         return struct.unpack(self.INTEGER_FORMAT, integer_bytes)[0]
 
-    def _integer_to_bytes(self, integer):
+    def _integer_to_bytes(self, integer) -> bytes:
         return struct.pack(self.INTEGER_FORMAT, integer)
 
     def _read_integer(self):
@@ -78,7 +78,7 @@ class Storage(object):
         root_address = self._read_integer()
         return root_address
 
-    def commit_root_address(self, root_address):
+    def commit_root_address(self, root_address: int):
         """
         更新元数据长度
         :param root_address:
@@ -99,7 +99,7 @@ class Storage(object):
     def closed(self):
         return self._f.closed
 
-    def read(self, address):
+    def read(self, address: int):
         self._f.seek(address)
         length = self._read_integer()
         data = self._f.read(length)
