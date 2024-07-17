@@ -36,11 +36,21 @@ class BinaryNode(object):
             length=length
         )
 
+    def __str__(self):
+        return str({
+            'key': self.key,
+            'len': self.length,
+            'right': self.right_ref.address,
+            'left': self.left_ref.address,
+            'value': self.value_ref.address
+        })
+
 
 class BinaryNodeRef(ValueRef):
     """
     树结点引用
     """
+
     def prepare_to_store(self, storage):
         if self._referent:
             self._referent.store_refs(storage)
@@ -65,7 +75,7 @@ class BinaryNodeRef(ValueRef):
         })
 
     @staticmethod
-    def string_to_referent(string):
+    def string_to_referent(string) -> BinaryNode:
         d = pickle.loads(string)
         return BinaryNode(
             BinaryNodeRef(address=d['left']),
@@ -169,3 +179,28 @@ class BinaryTree(LogicalBase):
             if next_node is None:
                 return node
             node = next_node
+
+    def __len__(self):
+        if not self._storage.locked:
+            self._refresh_tree_ref()
+        root = self._follow(self._tree_ref)
+        if root:
+            return root.length
+        else:
+            return 0
+
+    def __str__(self):
+        self._refresh_tree_ref()
+
+        res = ''
+
+        def dfs(ref, addr):
+            nonlocal res
+            data: BinaryNode = self._follow(ref)
+            if data:
+                res = res + (str(addr) + str(data) + '->' + self._follow(data.value_ref) + '\n')
+                dfs(data.right_ref, data.right_ref.address)
+                dfs(data.left_ref, data.left_ref.address)
+
+        dfs(self._tree_ref, self._storage.get_root_address())
+        return res
