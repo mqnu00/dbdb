@@ -4,6 +4,8 @@ import pickle
 import struct
 from datetime import datetime
 
+from filelock import FileLock
+
 
 class Storage:
     INTEGER_FORMAT = "!Q"
@@ -65,11 +67,14 @@ class Storage:
         return data
 
     def write(self, data):
-        self._seek_end()
-        object_address = self._f.tell()
-        self._write_integer(len(data))
-        self._f.write(data)
-        return object_address
+        lock = FileLock(self.dbname + '.lock')
+        with lock:
+            print("???")
+            self._seek_end()
+            object_address = self._f.tell()
+            self._write_integer(len(data))
+            self._f.write(data)
+            return object_address
 
     def travel_data(self):
         length = len(self)
