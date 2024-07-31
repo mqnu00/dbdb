@@ -68,7 +68,7 @@ class SkipList(LogicalBase):
             level += 1
         return level
 
-    def get(self, key):
+    def contain(self, key):
         cur = self.head
         for i in range(self.level, -1, -1):
             while cur.next[i] and cur.next[i].key < key:
@@ -78,8 +78,8 @@ class SkipList(LogicalBase):
             return cur
         return False
 
-    def get_key_value(self, key) -> Data:
-        return Data.bytes_to_obj(self._storage.read(self.get(key).value_pos))
+    def get(self, key) -> Data:
+        return Data.bytes_to_obj(self._storage.read(self.contain(key).value_pos))
 
     def _do_find(self, target: KeyData):
         update: List[Node] = [None] * (self.max_level + 1)
@@ -114,7 +114,7 @@ class SkipList(LogicalBase):
             for i in range(rlevel + 1):
                 n.next[i] = update[i].next[i]
                 update[i].next[i] = n
-        elif self.get_key_value(key).value != value:
+        elif self.get(key).value != value:
             self.pop(key)
             self.set(key, value)
 
@@ -147,5 +147,5 @@ if __name__ == '__main__':
     a = SkipList(s)
     a.set('1', '1')
     a.set('2', '2')
-    res = a.get('2')
+    res = a.contain('2')
     print()

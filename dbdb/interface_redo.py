@@ -21,12 +21,14 @@ class DBDB:
     def __getitem__(self, key):
         self._assert_not_closed()
         if self.__contains__(key):
-            return self._list.get_key_value(key).value
+            return self._list.get(key).value
         else:
-            raise KeyError('key not in database')
+            return False
 
     def __setitem__(self, key, value):
         self._assert_not_closed()
+        if self.__contains__(key):
+            self.__delitem__(key)
         return self._list.set(key, value)
 
     def __delitem__(self, key):
@@ -34,11 +36,11 @@ class DBDB:
         if self.__contains__(key):
             return self._list.pop(key)
         else:
-            raise KeyError('key not in database')
+            return False
 
     def __contains__(self, key):
         try:
-            return self._list.get(key)
+            return self._list.contain(key)
         except KeyError:
             return False
 
