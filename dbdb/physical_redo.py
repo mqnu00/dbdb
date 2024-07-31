@@ -69,7 +69,6 @@ class Storage:
     def write(self, data):
         lock = FileLock(self.dbname + '.lock')
         with lock:
-            print("???")
             self._seek_end()
             object_address = self._f.tell()
             self._write_integer(len(data))
