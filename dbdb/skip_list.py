@@ -8,7 +8,7 @@ from dbdb.physical_redo import Storage, Data
 
 class KeyData:
 
-    def __init__(self, key, value_pos=None):
+    def __init__(self, key, value_pos: int = None):
         self.data = (key, value_pos)
 
     @property
